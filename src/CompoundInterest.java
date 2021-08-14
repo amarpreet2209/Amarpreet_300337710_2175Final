@@ -18,34 +18,48 @@ import java.sql.SQLException;
  * @author unknown
  */
 public class CompoundInterest extends JFrame {
+    // Connection to the Database
     Connection1 con = new Connection1();
+    // creating connection object
     Connection conObj = con.connect();
 
     public CompoundInterest() throws SQLException, ClassNotFoundException {
         initComponents();
     }
 
+
+    // Github Link = https://github.com/amarpreet2209/Amarpreet_300337710_2175Final
     public static void main(String[] args) throws SQLException, ClassNotFoundException {
+        // creating form object
         CompoundInterest form1 = new CompoundInterest();
+        // setting form visibility true
         form1.setVisible(true);
+        // calling function to load DB data to table
         form1.updateTable();
     }
 
+    // This function loads data stored in database in the table
     public void updateTable() throws SQLException {
+        // Creating query to be executed
         String quer1 = "Select * from savingstable";
         PreparedStatement query = conObj.prepareStatement(quer1);
 
+        // Executing query and getting result in ResultSet object
         ResultSet rs = query.executeQuery();
 
         DefaultTableModel df = (DefaultTableModel) table1.getModel();
 
+        // taking cursor to the last record
         rs.last();
 
+        // getting number of rows
         int z = rs.getRow();
 
+        // taking cursor pointer before first record
         rs.beforeFirst();
 
 
+        // initializing 2d array
         String [][] array = new String[0][];
         if(z > 0){
             array = new String[z][5];
@@ -63,15 +77,19 @@ public class CompoundInterest extends JFrame {
 
         }
 
-
+        // declaring column names
         String[] cols = {"Number", "Name","Deposit","Years","Type of Savings"};
 
+        // creating model using 2d array with data and column names
         DefaultTableModel model = new DefaultTableModel(array, cols);
+
+        // setting table model
         table1.setModel(model);
     }
 
+    // This function gets executed when add button is clicked
     private void btnaddActionPerformed(ActionEvent e) throws SQLException {
-        // TODO add your code here
+        // getting values of textfields
 
         String custNumber = txtcustnum.getText();
         String custName = txtcustname.getText();
@@ -80,21 +98,27 @@ public class CompoundInterest extends JFrame {
         String savingsType = (String) combosavings.getSelectedItem();
 
 
+        // preparing and executing query
         String query1 = "Select * from savingstable where custno=?";
         PreparedStatement query = conObj.prepareStatement(query1);
         query.setString(1,custNumber);
         ResultSet rs = query.executeQuery();
 
+        // if record with same customer number exists
         if (rs.isBeforeFirst()) {
             JOptionPane.showMessageDialog(null, "The record is existing");
+
+            // cleating text fields
             txtcustnum.setText("");
             txtcustname.setText("");
             txtinitialdep.setText("");
             txtnumyears.setText("");
             return;
         }
+        // temporarily holding data in object
         Savings savings = new Savings(custNumber,custName,initialDeposit,numOfYears,savingsType);
 
+        // creating wuery
         String query2 = "insert into savingstable values (?,?,?,?,?)";
         query = conObj.prepareStatement(query2);
 
@@ -104,29 +128,37 @@ public class CompoundInterest extends JFrame {
         query.setString(4,numOfYears);
         query.setString(5,savingsType);
 
+        // executing query
         query.executeUpdate();
+        // displaying message
         JOptionPane.showMessageDialog(null, "One record added");
+        // updating table
         updateTable();
 
+        // clearing textfields
         txtcustnum.setText("");
         txtcustname.setText("");
         txtnumyears.setText("");
         txtinitialdep.setText("");
     }
 
+    // This function is executed when edit button is clicked
     private void btneditActionPerformed(ActionEvent e) throws SQLException {
         // TODO add your code here
         DefaultTableModel df = (DefaultTableModel) table1.getModel();
 
+        // getting textfield values
         String custNumber = txtcustnum.getText();
         String custName = txtcustname.getText();
         String initialDeposit = txtinitialdep.getText();
         String numOfYears = txtnumyears.getText();
         String savingsType = (String) combosavings.getSelectedItem();
 
+        // getting selected row
         int index1 = table1.getSelectedRow();
         String oldvalue = (String) df.getValueAt(index1,0);
 
+        // creating and executing query
         String query1 = "update savingstable set custno = ?,custname=?,cdep=?,nyears=?,savtype=? where custno=?";
         PreparedStatement query = conObj.prepareStatement(query1);
 
@@ -138,9 +170,11 @@ public class CompoundInterest extends JFrame {
         query.setString(6,oldvalue);
 
         query.executeUpdate();
+        // displaying message
         JOptionPane.showMessageDialog(null, "Record edited");
         updateTable();
 
+        // clearing text fields
         txtcustnum.setText("");
         txtcustname.setText("");
         txtnumyears.setText("");
@@ -148,6 +182,7 @@ public class CompoundInterest extends JFrame {
 
     }
 
+    // This function is executed when table1 is clicked
     private void table1MouseClicked(MouseEvent e) {
         // TODO add your code here
         DefaultTableModel df = (DefaultTableModel) table1.getModel();
@@ -188,8 +223,8 @@ public class CompoundInterest extends JFrame {
             array[j][1] = String.valueOf(startingValue);
 
             if (savingsType=="Savings-Regular") {
-                interest = Math.round((startingValue*0.10*100)/100.00);
-            } else interest = Math.round((startingValue*0.15*100)/100.00);
+                interest = Math.round((startingValue*Regular.interestRate*100)/100.00);
+            } else interest = Math.round((startingValue*Deluxe.interestRate*100)/100.00);
 
             array[j][2] = String.valueOf(Math.round(interest*100)/100.0);
             array[j][3] = String.valueOf(Math.round((startingValue+interest)*100)/100.0);
@@ -200,20 +235,19 @@ public class CompoundInterest extends JFrame {
         table2.setModel(model);
     }
 
+    // This function is executed when delete button is clicked
     private void btndeleteActionPerformed(ActionEvent e) throws SQLException {
-        // TODO add your code here
+        // confirming delete
         int input = JOptionPane.showConfirmDialog(null,"Do you really want to delete this record?");
 
+        // if yes
         if (input==0) {
             DefaultTableModel df = (DefaultTableModel) table1.getModel();
-
+            // getting customer number
             String custNumber = txtcustnum.getText();
-            String custName = txtcustname.getText();
-            String initialDeposit = txtinitialdep.getText();
-            String numOfYears = txtnumyears.getText();
-            String savingsType = (String) combosavings.getSelectedItem();
 
 
+        // creating and executing query
             String query1 = "delete from savingstable where custno=?";
             PreparedStatement query = conObj.prepareStatement(query1);
             query.setString(1,custNumber);
@@ -221,7 +255,7 @@ public class CompoundInterest extends JFrame {
             query.executeUpdate();
             updateTable();
 
-
+// clearing text fields
             txtcustnum.setText("");
             txtcustname.setText("");
             txtnumyears.setText("");

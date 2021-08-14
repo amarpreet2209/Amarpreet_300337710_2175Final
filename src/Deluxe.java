@@ -5,7 +5,7 @@ public class Deluxe extends Savings implements Compound_Interest{
         super(customerNumber, customerName, initialDeposit, numOfYears, typeOfSavings);
     }
 
-    private double interestRate = 0.15;
+    public static double interestRate = 0.15;
 
 
     public void generateTable() {
