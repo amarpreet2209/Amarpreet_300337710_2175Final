@@ -17,6 +17,7 @@ import java.sql.SQLException;
 /**
  * @author unknown
  */
+// Github Link = https://github.com/amarpreet2209/Amarpreet_300337710_2175Final
 public class CompoundInterest extends JFrame {
     // Connection to the Database
     Connection1 con = new Connection1();
@@ -118,7 +119,7 @@ public class CompoundInterest extends JFrame {
         // temporarily holding data in object
         Savings savings = new Savings(custNumber,custName,initialDeposit,numOfYears,savingsType);
 
-        // creating wuery
+        // creating query
         String query2 = "insert into savingstable values (?,?,?,?,?)";
         query = conObj.prepareStatement(query2);
 
@@ -179,6 +180,8 @@ public class CompoundInterest extends JFrame {
         txtcustname.setText("");
         txtnumyears.setText("");
         txtinitialdep.setText("");
+
+        compoundInterestTable(Integer.parseInt(numOfYears), Double.parseDouble(initialDeposit),savingsType);
 
     }
 
@@ -260,6 +263,10 @@ public class CompoundInterest extends JFrame {
             txtcustname.setText("");
             txtnumyears.setText("");
             txtinitialdep.setText("");
+
+
+            DefaultTableModel model = new DefaultTableModel();
+            table2.setModel(model);
         }
 
     }

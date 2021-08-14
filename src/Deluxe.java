@@ -7,6 +7,9 @@ public class Deluxe extends Savings implements Compound_Interest{
 
     public static double interestRate = 0.15;
 
+    public static double getInterestRate() {
+        return interestRate;
+    }
 
     public void generateTable() {
 //        DefaultTableModel df = (DefaultTableModel) table2.getModel();
